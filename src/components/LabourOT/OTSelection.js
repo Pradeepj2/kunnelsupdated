@@ -82,20 +82,20 @@ const StickyHeadTable = (props) => {
   //   );
   // };
 
-  useEffect(() => {
-    if (sitecode) {
-      const obj = [];
-      rows.map((res, idx) => {
-        if (res.id === sitecode) {
-          console.log(res.name, res.site_code, sitecode);
-          obj.push(...obj, res);
-        }
-      });
+  // useEffect(() => {
+  //   if (sitecode) {
+  //     const obj = [];
+  //     rows.map((res, idx) => {
+  //       if (res.id === sitecode) {
+  //         console.log(res.name, res.site_code, sitecode);
+  //         obj.push(...obj, res);
+  //       }
+  //     });
 
-      const newArry = getUnique(obj, "id");
-      if (newArry.length !== 0) setRows(newArry);
-    }
-  }, [sitecode]);
+  //     const newArry = getUnique(obj, "id");
+  //     if (newArry.length !== 0) setRows(newArry);
+  //   }
+  // }, [sitecode]);
 
   useEffect(() => {
     const curr_date = new Date();
