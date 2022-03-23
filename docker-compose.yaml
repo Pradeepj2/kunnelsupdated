@@ -1,0 +1,14 @@
+version: '3.0'
+services:
+  dulce:
+    container_name: kunnek-web
+    image: praveennagaraj/kunnek-web
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      - REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL}
+    ports:
+      - 3000:4000
+    volumes:
+      - .:/app
