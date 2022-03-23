@@ -15,10 +15,11 @@ import { TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { connect, Connect } from "react-redux";
 import { labours_list, users_list } from "../../redux/actions/siteActions";
-import { Button } from "react-bootstrap";
+import { fontSize } from "@mui/system";
 const columns = [
   { id: "sitecode", label: "Site Code" },
   { id: "labourerid", label: "Labour ID" },
+  { id: "labourname", label: "Labour Name" },
   { id: "intime", label: "Checked In" },
   { id: "outtime", label: "Checked Out" },
   { id: "selector_name", label: "Selector Name" },
@@ -35,12 +36,13 @@ const useStyles = makeStyles({
 
 const StickyHeadTable = (props) => {
   const [rows, setRows] = useState([]);
+  const [temprow, setTempRow] = useState([]);
   const [objectListArray, setObjectListArray] = useState([]);
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [userList, setUserList] = useState([]);
-  const [sitecode, Setsitecode] = useState("");
+  const [userType, setUserType] = useState("");
 
   useEffect(() => {
     axios
@@ -50,52 +52,12 @@ const StickyHeadTable = (props) => {
         },
       })
       .then((res) => {
-        console.log(res.data.data);
         props.users_list(res.data.data);
       })
       .catch((err) => {
         alert(err);
       });
   }, []);
-
-  const setUserSiteCode = (e) => {
-    objectListArray.map((res) => {
-      if (res.name === e.target.innerText) Setsitecode(res.id);
-    });
-  };
-
-  // const getUnique = (array, key) => {
-  //   if (typeof key !== "function") {
-  //     const property = key;
-  //     key = function (item) {
-  //       return item[property];
-  //     };
-  //   }
-  //   return Array.from(
-  //     array
-  //       .reduce(function (map, item) {
-  //         const k = key(item);
-  //         if (!map.has(k)) map.set(k, item);
-  //         return map;
-  //       }, new Map())
-  //       .values()
-  //   );
-  // };
-
-  // useEffect(() => {
-  //   if (sitecode) {
-  //     const obj = [];
-  //     rows.map((res, idx) => {
-  //       if (res.id === sitecode) {
-  //         console.log(res.name, res.site_code, sitecode);
-  //         obj.push(...obj, res);
-  //       }
-  //     });
-
-  //     const newArry = getUnique(obj, "id");
-  //     if (newArry.length !== 0) setRows(newArry);
-  //   }
-  // }, [sitecode]);
 
   useEffect(() => {
     const curr_date = new Date();
@@ -116,8 +78,9 @@ const StickyHeadTable = (props) => {
       )
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
+          // console.log(response.data);
           setRows(response.data);
+          setTempRow(response.data);
         } else {
           alert(response.data.Message);
         }
@@ -133,16 +96,58 @@ const StickyHeadTable = (props) => {
 
   useEffect(() => {
     const tempArry = [];
-    const tempuserNameArry = [];
+    const tempObjectArry = [];
     if (props.users) {
       const data = props.users.map((res) => {
-        tempArry.push({ name: res.username, id: res.id });
-        tempuserNameArry.push(res.username);
+        tempObjectArry.push({ lable: res.username, user_type: res.user_type });
+        tempArry.push([res.username, res.user_type].join(" , "));
       });
-      setUserList(tempuserNameArry);
-      setObjectListArray(tempArry);
+      setUserList(tempArry);
+      setObjectListArray(tempObjectArry);
     }
   }, [props.users]);
+
+  const setUser_type = (e) => {
+    var str = e.target.innerText;
+    if (str === "") {
+      setTempRow(rows);
+      return;
+    }
+    var temp = "";
+    for (let i = 0; i < str.length; i++) {
+      if (str[i] === " ") break;
+      temp += str[i];
+    }
+    let flage = 0;
+    objectListArray.map((res) => {
+      if (res.lable === temp) {
+        flage = 1;
+        setUserType(res.user_type);
+      }
+    });
+
+    let obj = [];
+    if (flage === 0) {
+      setTempRow(obj);
+      return;
+    }
+  };
+
+  useEffect(() => {
+    const obj = [];
+    if (userType) {
+      rows.map((res, idx) => {
+        if (res.user_type === userType) {
+          obj.push(...obj, res);
+        }
+      });
+    }
+    // console.log(obj.length, obj);
+    let unique = obj.filter(
+      (value, index, self) => index === self.findIndex((t) => t.id === value.id)
+    );
+    setTempRow(unique);
+  }, [userType]);
 
   // *****************************************************
 
@@ -160,9 +165,8 @@ const StickyHeadTable = (props) => {
   const selectHandler = (row) => {
     let Data = {
       selected_for_ot: !row.selected_for_ot,
-      selector_name: localStorage.getItem("user"),
+      selector_name: !row.selected_for_ot ? localStorage.getItem("user") : "",
     };
-    // console.log(row.id, Data);
     axios
       .put(
         `${process.env.REACT_APP_API_URL}/attendancemanage/ot_selector_name_approval_authorized/${row.id}/ `,
@@ -202,7 +206,6 @@ const StickyHeadTable = (props) => {
         }
       )
       .then((response) => {
-        console.log(response);
         if (response.status === 200) {
           setRows(response.data);
         } else {
@@ -228,13 +231,22 @@ const StickyHeadTable = (props) => {
           ) : null}
 
           <Autocomplete
-            onChange={(e) => setUserSiteCode(e)}
+            onInputCapture={console.log("KK")}
+            onChange={(e) => setUser_type(e)}
             disablePortal
+            style={{ border: "1px solid #a79999", marginBottom: "5px" }}
             id="combo-box-demo"
             options={userList}
             sx={{ width: 300 }}
             renderInput={(params) => (
-              <TextField {...params} label="Select User" />
+              <TextField
+                style={{
+                  fontSize: "1rem",
+                  marginLeft: "13px",
+                }}
+                {...params}
+                label="Select labour under"
+              />
             )}
           />
           <Table
@@ -281,14 +293,14 @@ const StickyHeadTable = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {!(rows.length === 0) ? (
-                rows
+              {!(temprow.length === 0) ? (
+                temprow
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, idx) => {
                     return (
                       <TableRow hover role="checkbox" tabIndex={-1} key={idx}>
                         <TableCell key="Sl.No">
-                          {rows.indexOf(row) + 1}
+                          {temprow.indexOf(row) + 1}
                         </TableCell>
                         {columns.map((column, idx) => {
                           const value = row[column.id];
@@ -321,7 +333,7 @@ const StickyHeadTable = (props) => {
               )}
             </TableBody>
           </Table>
-          {!rows.length ? (
+          {!temprow.length ? (
             <>
               <div
                 style={{
@@ -337,11 +349,10 @@ const StickyHeadTable = (props) => {
             </>
           ) : null}
         </TableContainer>
-        <Button style={{ backgroundColor: "navy" }}>Create OT</Button>
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={rows.length}
+          count={temprow.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

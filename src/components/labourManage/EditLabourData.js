@@ -917,7 +917,9 @@ const EditLabourData = ({
                   as="select"
                   name="Report_To"
                   ref={register()}
-                  defaultValue={labourData.report_to}
+                  defaultValue={
+                    labourData.report_to ? labourData.report_to : "choose"
+                  }
                 >
                   <option key="0" value="">
                     Choose...
@@ -930,7 +932,7 @@ const EditLabourData = ({
                     )
                       return (
                         <option key={idx + 1} value={data.username}>
-                          {data.username} ----> {data.role}
+                          {data.username} , {data.user_type}
                         </option>
                       );
                   })}

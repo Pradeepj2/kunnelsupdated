@@ -1,22 +1,21 @@
-import React from 'react';
-import { Form, Button, Modal } from 'react-bootstrap';
-import { useForm } from 'react-hook-form';
-import { connect } from 'react-redux';
-import { toggle_tally_modal } from '../../redux/actions/fetchActions.js';
-import axios from 'axios';
+import React from "react";
+import { Form, Button, Modal } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import { connect } from "react-redux";
+import { toggle_tally_modal } from "../../redux/actions/fetchActions.js";
+import axios from "axios";
 
 const CreateAccount = ({ tallyModal, toggle_tally_modal }) => {
-  const { register, handleSubmit, errors } = useForm({ mode: 'onTouched' });
+  const { register, handleSubmit, errors } = useForm({ mode: "onTouched" });
 
   const onSubmit = (data) => {
     axios
       .post(`${process.env.REACT_APP_API_URL}/tally/accounts/`, data, {
         headers: {
-          Authorization: `Token ${localStorage.getItem('token')}`,
+          Authorization: `Token ${localStorage.getItem("token")}`,
         },
       })
       .then((response) => {
-        console.log(response);
         if (response.status === 201) {
           alert(
             `Account created Successfully! \n ID : ${response.data.id} \n Account : ${response.data.account}`
@@ -48,7 +47,7 @@ const CreateAccount = ({ tallyModal, toggle_tally_modal }) => {
                 })}
               ></Form.Control>
             </Form.Group>
-            {errors.account?.type === 'required' && (
+            {errors.account?.type === "required" && (
               <p className="text-danger">
                 <small>
                   <i>This field is required</i>

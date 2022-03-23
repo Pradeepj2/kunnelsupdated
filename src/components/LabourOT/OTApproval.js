@@ -17,6 +17,7 @@ import { GrUpdate } from "react-icons/gr";
 const columns = [
   { id: "sitecode", label: "Site Code" },
   { id: "labourerid", label: "Labour Code" },
+  { id: "labourname", label: "Labour Name" },
   { id: "date", label: "Date" },
   { id: "totalhour", label: "Total Hours" },
   { id: "othours", label: "OT Hours" },

@@ -1,11 +1,11 @@
-import React,{ useState } from 'react';
-import { Form, Button, Modal, Col} from 'react-bootstrap';
-import { connect } from 'react-redux';
-import { site_edit_modal } from '../../redux/actions/fetchActions';
-import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import { Snackbar } from '@material-ui/core';
-import Alert from '../Shared/Alert';
+import React, { useState } from "react";
+import { Form, Button, Modal, Col } from "react-bootstrap";
+import { connect } from "react-redux";
+import { site_edit_modal } from "../../redux/actions/fetchActions";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import { Snackbar } from "@material-ui/core";
+import Alert from "../Shared/Alert";
 
 const EditSiteData = ({
   site_edit_modal,
@@ -13,20 +13,18 @@ const EditSiteData = ({
   modalSiteEdit,
   siteEditData,
   salaryCodes,
-  revalidate
+  revalidate,
 }) => {
-  const { register, handleSubmit, errors} = useForm({
-    mode: 'onTouched',
+  const { register, handleSubmit, errors } = useForm({
+    mode: "onTouched",
   });
 
- 
-
- // const [specificRatio,setSpecificRatio] = useState('1:')
- const [deletion,setDeletion] = useState(false) 
- const [showSuccess, setShowSuccess] = useState(false);
- const [startDate,setStartDate] = useState(siteEditData.start_date)
- const [endDate,setEndDate] = useState(siteEditData.end_date)
- const [aplhaError,setAlphaError] = useState(true)
+  // const [specificRatio,setSpecificRatio] = useState('1:')
+  const [deletion, setDeletion] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [startDate, setStartDate] = useState(siteEditData.start_date);
+  const [endDate, setEndDate] = useState(siteEditData.end_date);
+  const [aplhaError, setAlphaError] = useState(true);
 
   const onSubmit = (data) => {
     const Data = {
@@ -39,114 +37,117 @@ const EditSiteData = ({
       compensation_dr_account: data.compensation_dr_account,
       //end_buffer: data.end_buffer.slice(0, 5) + ':00',
       end_date: data.end_date,
-      end_time: data.end_time.slice(0, 5) + ':00',
+      end_time: data.end_time.slice(0, 5) + ":00",
       festival_advnc_cr_account: data.festival_advnc_cr_account,
       festival_advnc_dr_account: data.festival_advnc_dr_account,
-      lunch_time: data.lunch_time.slice(0, 5) + ':00',
-      lunch_time_end: data.lunch_time_end.slice(0, 5) + ':00',
+      lunch_time: data.lunch_time.slice(0, 5) + ":00",
+      lunch_time_end: data.lunch_time_end.slice(0, 5) + ":00",
       project_manager: data.project_manager,
       project_type: data.project_type,
       retension_cr_account: data.retension_cr_account,
       retension_dr_account: data.retension_dr_account,
       salary_structure: data.salary_structure,
-     // site_engineer: data.site_engineer,
+      // site_engineer: data.site_engineer,
       special_advnc_cr_account: data.special_advnc_cr_account,
       special_advnc_dr_account: data.special_advnc_dr_account,
-     // start_buffer: data.start_buffer.slice(0, 5) + ':00',
+      // start_buffer: data.start_buffer.slice(0, 5) + ':00',
       start_date: data.start_date,
-      start_time: data.start_time.slice(0, 5) + ':00',
+      start_time: data.start_time.slice(0, 5) + ":00",
       wage_cr_account: data.wage_cr_account,
       wage_dr_account: data.wage_dr_account,
       weekly_advnc_cr_account: data.weekly_advnc_cr_account,
       weekly_advnc_dr_account: data.weekly_advnc_dr_account,
       siteEng_id: siteEditData.siteEng_id,
-      site_specific_ratio:data.site_specific_ratio,
-      site_code:data.site_code
+      site_specific_ratio: data.site_specific_ratio,
+      site_code: data.site_code,
     };
-    if(aplhaError)
-    {
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/sitemanage/sites/edit`, Data, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem('token')}`,
-        },
-      })
-      .then((res) => {
-        //alert(res.data.message);
-        console.log(res)
-        setShowSuccess(true)
-        setTimeout(() => {
-          setShowSuccess(false);
-          site_edit_modal({ show: false, data: [] })   
-        }, 1000);
-        revalidate();
-       
-      })
-      .catch((error) => {
-        alert(error);
-      });
+    if (aplhaError) {
+      axios
+        .post(`${process.env.REACT_APP_API_URL}/sitemanage/sites/edit`, Data, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((res) => {
+          //alert(res.data.message);
+          setShowSuccess(true);
+          setTimeout(() => {
+            setShowSuccess(false);
+            site_edit_modal({ show: false, data: [] });
+          }, 1000);
+          revalidate();
+        })
+        .catch((error) => {
+          alert(error);
+        });
     }
   };
 
-// validation for alphanumneric
+  // validation for alphanumneric
   function isAlphaNumeric(str) {
     var code, i, len;
-  
+
     for (i = 0, len = str.length; i < len; i++) {
       code = str.charCodeAt(i);
-      if (!(code > 47 && code < 58) && // numeric (0-9)
-          !(code > 64 && code < 91) && // upper alpha (A-Z)
-          !(code > 96 && code < 123)) { // lower alpha (a-z)
+      if (
+        !(code > 47 && code < 58) && // numeric (0-9)
+        !(code > 64 && code < 91) && // upper alpha (A-Z)
+        !(code > 96 && code < 123)
+      ) {
+        // lower alpha (a-z)
         return false;
       }
     }
     return true;
-  };
+  }
 
   //deleting Sites
-  
-  const deleteSiteHandler = (e)=>{
-    setDeletion(true)
-    setShowSuccess(true)
-    
-    axios.get(`${process.env.REACT_APP_API_URL}/sitemanage/delete-site/${siteEditData.id}/`,{
-      headers: {
-      Authorization: `Token ${localStorage.getItem('token')}`,
-    },
-  }).then((res)=>{
-    console.log(res)
-    setTimeout(() => {
-     
-      //alert(res.data.message);
-      site_edit_modal({ show: false, data: [] })
-      //e.refreshPage()
-      setShowSuccess(false)
-      setDeletion(false)
-      
-    }, 1500);
-    revalidate()
-  }).catch((err)=>
-  {
-    console.log("Error Occured")
-  })
- 
-  }
-  console.log(siteEditData)
+
+  const deleteSiteHandler = (e) => {
+    setDeletion(true);
+    setShowSuccess(true);
+
+    axios
+      .get(
+        `${process.env.REACT_APP_API_URL}/sitemanage/delete-site/${siteEditData.id}/`,
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((res) => {
+        setTimeout(() => {
+          //alert(res.data.message);
+          site_edit_modal({ show: false, data: [] });
+          //e.refreshPage()
+          setShowSuccess(false);
+          setDeletion(false);
+        }, 1500);
+        revalidate();
+      })
+      .catch((err) => {
+        console.log("Error Occured");
+      });
+  };
 
   return (
     <>
-      {(deletion)?(<Snackbar open={showSuccess} autoHideDuration={1000}>
-        <Alert severity="error">Site Deleted</Alert>
-      </Snackbar>):(<Snackbar open={showSuccess} autoHideDuration={1000}>
-        <Alert severity="success">Site details updated successfully</Alert>
-      </Snackbar>)}
+      {deletion ? (
+        <Snackbar open={showSuccess} autoHideDuration={1000}>
+          <Alert severity="error">Site Deleted</Alert>
+        </Snackbar>
+      ) : (
+        <Snackbar open={showSuccess} autoHideDuration={1000}>
+          <Alert severity="success">Site details updated successfully</Alert>
+        </Snackbar>
+      )}
       <Modal
         show={modalSiteEdit}
         onHide={() => {
-          site_edit_modal({ show: false, data: [] })
+          site_edit_modal({ show: false, data: [] });
           setDeletion(false);
-          setAlphaError(true)
-          
+          setAlphaError(true);
         }}
       >
         <Modal.Header closeButton>
@@ -166,7 +167,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 />
-                {errors.name?.type === 'required' && (
+                {errors.name?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -185,7 +186,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 />
-                {errors.address?.type === 'required' && (
+                {errors.address?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -204,7 +205,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 />
-                {errors.client_name?.type === 'required' && (
+                {errors.client_name?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -225,7 +226,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 />
-                {errors.project_manager?.type === 'required' && (
+                {errors.project_manager?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -244,7 +245,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 />
-                {errors.project_type?.type === 'required' && (
+                {errors.project_type?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -271,18 +272,20 @@ const EditSiteData = ({
                   </p>
                 )}
               </Form.Group> */}
-               <Form.Group as={Col} controlId="site_code">
+              <Form.Group as={Col} controlId="site_code">
                 <Form.Label>Site Code</Form.Label>
                 <Form.Control
                   type="text"
                   defaultValue={siteEditData.site_code}
-                  onChange={(e)=> setAlphaError(isAlphaNumeric(e.target.value))}
+                  onChange={(e) =>
+                    setAlphaError(isAlphaNumeric(e.target.value))
+                  }
                   name="site_code"
                   ref={register({
                     required: true,
                   })}
                 />
-                {errors.site_code?.type === 'required' && (
+                {errors.site_code?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -305,13 +308,13 @@ const EditSiteData = ({
                   type="date"
                   placeholder="Enter Start Date"
                   name="start_date"
-                  onChange={(e)=>setStartDate(e.target.value)}
+                  onChange={(e) => setStartDate(e.target.value)}
                   defaultValue={siteEditData.start_date}
                   ref={register({
                     required: true,
                   })}
                 />
-                {errors.start_date?.type === 'required' && (
+                {errors.start_date?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -325,28 +328,26 @@ const EditSiteData = ({
                   type="date"
                   placeholder="Enter End Date"
                   name="end_date"
-                  onChange={(e)=>setEndDate(e.target.value)}
+                  onChange={(e) => setEndDate(e.target.value)}
                   defaultValue={siteEditData.end_date}
                   ref={register({
                     required: true,
                   })}
                 />
-                {errors.end_date?.type === 'required' && (
+                {errors.end_date?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
                     </small>
                   </p>
                 )}
-                {
-                  (startDate>endDate)?(
-                    <p className="text-danger">
+                {startDate > endDate ? (
+                  <p className="text-danger">
                     <small>
                       <i>end date should be greater than start date</i>
                     </small>
                   </p>
-                  ):null
-                }
+                ) : null}
               </Form.Group>
               <Form.Group as={Col} controlId="lunch_time">
                 <Form.Label>Lunch Start Time</Form.Label>
@@ -359,7 +360,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 />
-                {errors.lunch_time?.type === 'required' && (
+                {errors.lunch_time?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -369,7 +370,7 @@ const EditSiteData = ({
               </Form.Group>
             </Form.Row>
             <Form.Row>
-            <Form.Group as={Col} controlId="lunch_time_end">
+              <Form.Group as={Col} controlId="lunch_time_end">
                 <Form.Label>Lunch End Time</Form.Label>
                 <Form.Control
                   type="time"
@@ -380,7 +381,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 />
-                {errors.lunch_time?.type === 'required' && (
+                {errors.lunch_time?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -398,7 +399,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 />
-                {errors.start_time?.type === 'required' && (
+                {errors.start_time?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -417,7 +418,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 />
-                {errors.end_time?.type === 'required' && (
+                {errors.end_time?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -436,7 +437,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 /> */}
-                {/* {errors.start_buffer?.type === 'required' && (
+              {/* {errors.start_buffer?.type === 'required' && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -444,10 +445,9 @@ const EditSiteData = ({
                   </p>
                 )}
               </Form.Group> */}
-             
             </Form.Row>
             <Form.Row>
-            <Form.Group as={Col} controlId="site_specific_ratio">
+              <Form.Group as={Col} controlId="site_specific_ratio">
                 <Form.Label>Site Specific Ratio</Form.Label>
                 <Form.Control
                   type="text"
@@ -458,7 +458,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 />
-                {errors.name?.type === 'required' && (
+                {errors.name?.type === "required" && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -466,7 +466,7 @@ const EditSiteData = ({
                   </p>
                 )}
               </Form.Group>
-             
+
               {/* <Form.Group as={Col} controlId="end_buffer">
                 <Form.Label>Buffer End Time</Form.Label>
                 <Form.Control
@@ -479,7 +479,7 @@ const EditSiteData = ({
                   })}
                 />
                 {errors.end_buffer?.type === 'required' && ( */}
-                  {/* <p className="text-danger">
+              {/* <p className="text-danger">
                     <small>
                       <i>This field is required</i>
                     </small>
@@ -487,7 +487,7 @@ const EditSiteData = ({
                 )}
               </Form.Group>
                */}
-            
+
               {/* <Form.Group as={Col} controlId="salary_structure">
                 <Form.Label>Salary day structure</Form.Label>
                 <Form.Control
@@ -497,7 +497,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 > */}
-                  {/* <option value="">Select salary code</option>
+              {/* <option value="">Select salary code</option>
                   {!(salaryCodes.length === 0)
                     ? salaryCodes.map((item) => {
                         const { id } = item;
@@ -509,7 +509,7 @@ const EditSiteData = ({
                       })
                     : null}
                 </Form.Control> */}
-                {/* {errors.salary_structure?.type === 'required' && (
+              {/* {errors.salary_structure?.type === 'required' && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -527,7 +527,7 @@ const EditSiteData = ({
                     required: true,
                   })}
                 > */}
-                  {/* <option value="">Select any account</option>
+              {/* <option value="">Select any account</option>
                   {!(siteAccounts.length === 0)
                     ? siteAccounts.map((item) => {
                         const { id, account } = item;
@@ -539,7 +539,7 @@ const EditSiteData = ({
                       })
                     : null}
                 </Form.Control> */}
-                {/* {errors.wage_cr_account?.type === 'required' && (
+              {/* {errors.wage_cr_account?.type === 'required' && (
                   <p className="text-danger">
                     <small>
                       <i>This field is required</i>
@@ -886,7 +886,7 @@ const EditSiteData = ({
                 )}
               </Form.Group>
             </Form.Row> */}
-             {/* <Form.Row>
+            {/* <Form.Row>
             <Form.Group as={Col} controlId="site_specific_ratio">
                 <Form.Label>Site Specific Ratio</Form.Label>
                 <Form.Control
@@ -906,8 +906,19 @@ const EditSiteData = ({
                 )}
               </Form.Group>
             </Form.Row> */}
-            <Button type="submit" style={{border:'blue'}}>Update Site</Button>
-            <Button  style={{backgroundColor:'red',border:'red', marginLeft:'20px'}} onClick={(e)=>deleteSiteHandler(e)}>Delete Site</Button>
+            <Button type="submit" style={{ border: "blue" }}>
+              Update Site
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "red",
+                border: "red",
+                marginLeft: "20px",
+              }}
+              onClick={(e) => deleteSiteHandler(e)}
+            >
+              Delete Site
+            </Button>
           </Form>
         </Modal.Body>
       </Modal>

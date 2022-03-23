@@ -92,7 +92,6 @@ const RegisterLabour = ({
         }
       )
       .then((res) => {
-        console.log(res);
         if (res.data.status) {
           setShowSuccess(true);
           window.location.reload();
@@ -881,7 +880,7 @@ const RegisterLabour = ({
                     if (data.site_code === siteCode)
                       return (
                         <option key={idx} value={data.username}>
-                          {data.username} ---> {data.role}
+                          {data.username} , {data.user_type}
                         </option>
                       );
                   })}
